@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NCShop.Web.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore; 
 namespace NCShop.Web
 {
     public class Startup
@@ -23,6 +25,12 @@ namespace NCShop.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            /*Crear el servicio que realiza la conexion a la base de datos, el nombre DefaultConnection
+            pertenece a la conexion definida en el archivo appsettings.json, permite usar cualquier DB*/
+            services.AddDbContext<DataContex>(cfg => {
+                cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnectionSQLServer"));
+            });
+
             services.AddControllersWithViews();
         }
 
