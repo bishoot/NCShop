@@ -6,8 +6,11 @@ namespace NCShop.Web.Data.Entities
 {
     
     public class Product
-    {
+    { 
         public int Id { get; set; }
+        [Display(Name ="Nombre")]/*Asigna nombre a las vistas, reemplazando el nombre de campo*/
+        [MaxLength(50,ErrorMessage ="El campo {0} solo puede tener {1} caracteres de longitud.")]/*Cantidad Caracteres*/
+        [Required]/*Obligatorio*/
         public string Name { get; set; }
 
         /*DataNotations o Decoraciones,
@@ -26,10 +29,10 @@ namespace NCShop.Web.Data.Entities
         public string ImageUrl { get; set; }
 
         [Display(Name = "Última Compra")]
-        public DateTime LastPurchase { get; set; }
+        public DateTime? LastPurchase { get; set; }/*Pemrite nulo por el ?*/
 
         [Display(Name = "Última Venta")]
-        public DateTime LastSale { get; set; }
+        public DateTime? LastSale { get; set; }/*Pemrite nulo por el ?*/
 
         [Display(Name = "Disponible?")]
         public bool IsAvaliable { get; set; }
