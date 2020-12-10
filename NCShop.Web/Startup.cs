@@ -1,18 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NCShop.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore; 
 namespace NCShop.Web
 {
+    using Data.Repositories;
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -30,12 +25,20 @@ namespace NCShop.Web
             
              NOTA: esta linea lo que permite es decir que cualquier clase que en su conector llame un Datacontex automaticamente
             es cargado con esta conexion*/
-            services.AddDbContext<DataContex>(cfg => {
+            services.AddDbContext<DataContex>(cfg =>
+            {
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnectionSQLServer"));
             });
 
             /*Realiza la inyeccion del SeedDb para que la clase Program la pueda usar por medio de los scope*/
-            services.AddTransient<SeedDb>();
+            services.AddTransient<SeedDb>();/*Dura mientras inicia la aplicacion y se destruye AddTransient, para larga duracion usar  services.AddScoped*/
+
+
+            /*Instancia la interfas del repositorio cargado con la clase llamada del repositorio, se usa el metodo
+             AddScoped porque esta persiste en la aplicacion a diferencia del AddTransient que dura mientras se inicia la aplicacion unicamente */
+            services.AddScoped<IRepository, Repository>();
+
+
 
             services.AddControllersWithViews();
         }

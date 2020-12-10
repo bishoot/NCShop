@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +15,7 @@ namespace NCShop.Web.Data
     public class SeedDb
     {
         private readonly DataContex contex;//Conexion db
-        private Random random;
+        private readonly Random random;
 
         public SeedDb(DataContex contex)
         {
@@ -51,12 +50,13 @@ namespace NCShop.Web.Data
         /// <param name="Name"></param>
         private void AddProduct(string Name)
         {
-            Product obj = new Product();
-
-            obj.Name = Name;
-            obj.Price = this.random.Next(100000);/*Asigna valor randon entre 0 y 100000*/
-            obj.IsAvaliable = true;
-            obj.Stock = this.random.Next(1000);/*Asigna valor randon entre 0 y 1000*/
+            Product obj = new Product
+            {
+                Name = Name,
+                Price = this.random.Next(100000),/*Asigna valor randon entre 0 y 100000*/
+                IsAvaliable = true,
+                Stock = this.random.Next(1000)/*Asigna valor randon entre 0 y 1000*/
+            };
 
             this.contex.Products.Add(obj);
         }

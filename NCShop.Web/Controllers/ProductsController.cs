@@ -1,46 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NCShop.Web.Data;
-using NCShop.Web.Data.Entities;
 
 namespace NCShop.Web.Controllers
 {
+    using Data.Entities;
+    using Data.Repositories;
+    using System.Threading.Tasks;
+
     public class ProductsController : Controller
     {
-        private readonly DataContex _context;
+        private readonly IRepository repository;
 
-        public ProductsController(DataContex context)
+        /*Este contructor inicializa con el repositorio que administra la base de datos segun la que se vaya a usar
+         por medio de la interfaz del repositorio*/
+        public ProductsController(IRepository repository)
         {
-            _context = context;
+            this.repository = repository;
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Products.ToListAsync());
+            return View(this.repository.GetProducts());
         }
 
         // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = this.repository.GetProduct(id.Value);
             if (product == null)
             {
                 return NotFound();
             }
+            {
+                return View(product);
+            }
 
-            return View(product);
         }
 
         // GET: Products/Create
@@ -50,35 +50,41 @@ namespace NCShop.Web.Controllers
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price,ImageUrl,LastPurchase,LastSale,IsAvaliable,Stock")] Product product)
+        /* public IActionResult Create([Bind("Id,Name,Price,ImageUrl,LastPurchase,LastSale,IsAvaliable,Stock")] Product product)
+         QUITAR EL BIND no sirve proboca errores posteriormente, cuando se actualiza el modelo tocaria definir los nuevos campos en el bind
+        por eso es mejor quitarlo
+        */
+        public async Task<IActionResult> Create(Product product)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid)/*Valida las reglas del modelo*/
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
+                this.repository.AddProduct(product);
+                await this.repository.SaveAllAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
         }
 
         // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = this.repository.GetProduct(id.Value);
+
             if (product == null)
             {
                 return NotFound();
             }
-            return View(product);
+            else
+            {
+                return View(product);
+            }
         }
 
         // POST: Products/Edit/5
@@ -86,7 +92,8 @@ namespace NCShop.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ImageUrl,LastPurchase,LastSale,IsAvaliable,Stock")] Product product)
+        //public IActionResult Edit(int id, [Bind("Id,Name,Price,ImageUrl,LastPurchase,LastSale,IsAvaliable,Stock")] Product product)
+        public async Task<IActionResult> Edit(int id, Product product)
         {
             if (id != product.Id)
             {
@@ -97,12 +104,12 @@ namespace NCShop.Web.Controllers
             {
                 try
                 {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
+                    this.repository.UpdateProduct(product);
+                    await this.repository.SaveAllAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!this.repository.ProductExists(id))
                     {
                         return NotFound();
                     }
@@ -117,15 +124,14 @@ namespace NCShop.Web.Controllers
         }
 
         // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = this.repository.GetProduct(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -139,15 +145,16 @@ namespace NCShop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var product = this.repository.GetProduct(id);
+            if(product == null)
+            {
+                return NotFound();
+            }
+
+            this.repository.RemoveProduct(product);
+            await this.repository.SaveAllAsync();
+            return  RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
-        }
     }
 }

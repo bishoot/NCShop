@@ -11,7 +11,7 @@ namespace NCShop.Web.Data
         public DbSet<Product> Products { get; set; }
         public DataContex(DbContextOptions<DataContex> options) : base(options)
         {
-           
+
         }
     }
 }

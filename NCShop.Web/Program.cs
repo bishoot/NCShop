@@ -14,7 +14,7 @@ namespace NCShop.Web
         {
             IWebHost host = CreateWebHostBuilder(args).Build();//Crea el servidor Web
             RunSeeding(host);/*Correr la semilla que carga los registros por defecto de la base de datos*/
-            host.Run();
+            host.Run();/*Carga toda la información al servidor web*/
         }
 
         private static void RunSeeding(IWebHost host)
