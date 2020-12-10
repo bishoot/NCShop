@@ -26,10 +26,16 @@ namespace NCShop.Web
         public void ConfigureServices(IServiceCollection services)
         {
             /*Crear el servicio que realiza la conexion a la base de datos, el nombre DefaultConnection
-            pertenece a la conexion definida en el archivo appsettings.json, permite usar cualquier DB*/
+            pertenece a la conexion definida en el archivo appsettings.json, permite usar cualquier DB
+            
+             NOTA: esta linea lo que permite es decir que cualquier clase que en su conector llame un Datacontex automaticamente
+            es cargado con esta conexion*/
             services.AddDbContext<DataContex>(cfg => {
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnectionSQLServer"));
             });
+
+            /*Realiza la inyeccion del SeedDb para que la clase Program la pueda usar por medio de los scope*/
+            services.AddTransient<SeedDb>();
 
             services.AddControllersWithViews();
         }
