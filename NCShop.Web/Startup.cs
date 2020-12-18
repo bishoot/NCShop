@@ -31,11 +31,14 @@ namespace NCShop.Web
             });
 
             /*Realiza la inyeccion del SeedDb para que la clase Program la pueda usar por medio de los scope*/
-            services.AddTransient<SeedDb>();/*Dura mientras inicia la aplicacion y se destruye AddTransient, para larga duracion usar  services.AddScoped*/
+            /*Dura mientras inicia la aplicacion y se destruye AddTransient, para larga duracion usar 
+                                             * services.AddScoped*/
+            services.AddTransient<SeedDb>();
 
 
             /*Instancia la interfas del repositorio cargado con la clase llamada del repositorio, se usa el metodo
-             AddScoped porque esta persiste en la aplicacion a diferencia del AddTransient que dura mientras se inicia la aplicacion unicamente */
+             AddScoped porque esta persiste en la aplicacion a diferencia del AddTransient que dura mientras se inicia 
+            la aplicacion unicamente */
             services.AddScoped<IRepository, Repository>();
 
 

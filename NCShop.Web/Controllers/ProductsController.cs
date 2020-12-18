@@ -60,10 +60,22 @@ namespace NCShop.Web.Controllers
         {
             if (ModelState.IsValid)/*Valida las reglas del modelo*/
             {
+                //Inserta el producto a la cola de cambios de la base de datos
                 this.repository.AddProduct(product);
-                await this.repository.SaveAllAsync();
-                return RedirectToAction(nameof(Index));
+                //confirma todos los datos en la base de datos
+                bool result= await this.repository.SaveAllAsync();
+                if (result) { 
+                    //Retorna a la vista Index
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    //Retorna a la vista para que se muestre los errores o definir que no se guardo
+                    return View(product);
+                }
             }
+
+            //Retorna a la vista para que se muestre los errores
             return View(product);
         }
 
